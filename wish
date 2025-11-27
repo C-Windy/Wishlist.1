@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chris' Birthday Wishlist</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: #0b1020;
+      --card-bg: #151a2c;
+      --accent: #ffd36b;
+      --accent-soft: rgba(255, 211, 107, 0.15);
+      --text: #f4f4f7;
+      --muted: #9ca3af;
+      --border: #272e45;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1b2340 0, #050712 60%, #020308 100%);
+      color: var(--text);
+    }
+
+    .page {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 24px 16px 48px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin: 0 0 8px;
+    }
+
+    header p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    .tagline {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--accent);
+      background: var(--accent-soft);
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 211, 107, 0.25);
+      margin-bottom: 10px;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin: 12px 0;
+    }
+
+    .filter-btn {
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(17, 24, 39, 0.85);
+      padding: 8px 14px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.18s ease-out;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .filter-btn span {
+      opacity: 0.7;
+      font-size: 0.7rem;
+    }
+
+    .filter-btn:hover {
+      border-color: rgba(255, 211, 107, 0.45);
+      transform: translateY(-1px);
+    }
+
+    .filter-btn.active {
+      background: linear-gradient(135deg, #fbbf24, #f97316);
+      color: #111827;
+      border-color: transparent;
+      box-shadow: 0 0 18px rgba(251, 191, 36, 0.35);
+    }
+
+    .wishlist-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 16px;
+      margin-top: 12px;
+    }
+
+    .item-card {
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.96), rgba(12, 18, 34, 0.96));
+      border-radius: 18px;
+      border: 1px solid rgba(55, 65, 81, 0.85);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.8);
+      transform: translateY(0);
+      transition: transform 0.18s ease-out, box-shadow 0.18s ease-out, border-color 0.18s ease-out;
+    }
+
+    .item-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 26px 55px rgba(15, 23, 42, 0.95);
+      border-color: rgba(251, 191, 36, 0.5);
+    }
+
+    .item-image-wrapper {
+      position: relative;
+      padding: 10px;
+      background: radial-gradient(circle at top, rgba(251, 191, 36, 0.16), transparent 60%);
+    }
+
+    .item-image {
+      width: 100%;
+      border-radius: 14px;
+      display: block;
+      max-height: 190px;
+      object-fit: contain;
+      background: #020617;
+    }
+
+    .price-tag {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      background: rgba(15, 23, 42, 0.92);
+      color: var(--accent);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      border: 1px solid rgba(251, 191, 36, 0.5);
+      backdrop-filter: blur(10px);
+    }
+
+    .tier-chip {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      font-size: 0.7rem;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--muted);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .item-body {
+      padding: 12px 14px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .item-title {
+      font-size: 0.95rem;
+      margin: 0;
+    }
+
+    .item-notes {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .tag {
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      color: #e5e7eb;
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .item-footer {
+      margin-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+    }
+
+    .btn-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.8);
+      text-decoration: none;
+      color: #e5e7eb;
+      font-size: 0.78rem;
+      background: rgba(15, 23, 42, 0.95);
+      transition: all 0.16s ease-out;
+      white-space: nowrap;
+    }
+
+    .btn-link:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    .priority {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .empty-state {
+      text-align: center;
+      margin-top: 40px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    footer {
+      margin-top: 32px;
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 1.45rem;
+      }
+      .page {
+        padding: 18px 12px 34px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="tagline">
+        <span>☄️</span>
+        <span>Birthday Wishlist • 2025</span>
+      </div>
+      <h1>Chris' Birthday Wishlist</h1>
+      <p>
+        Pick anything you like — the price filters below just make it easier to browse.
+        No pressure on specific items.
+      </p>
+    </header>
+
+    <!-- OWNER TOGGLE -->
+    <div class="filters">
+      <button class="filter-btn owner-btn active" data-owner="chris">
+        Chris' List
+      </button>
+      <button class="filter-btn owner-btn" data-owner="gf">
+        Her List
+      </button>
+    </div>
+
+    <!-- PRICE FILTERS -->
+    <div class="filters">
+      <button class="filter-btn active" data-range="all">
+        All
+        <span>show everything</span>
+      </button>
+      <button class="filter-btn" data-range="under20">
+        $
+      </button>
+      <button class="filter-btn" data-range="20-40">
+        $$
+      </button>
+      <button class="filter-btn" data-range="40-60">
+        $$$
+      </button>
+      <button class="filter-btn" data-range="60-100">
+        $$$$
+      </button>
+      <button class="filter-btn" data-range="100plus">
+        $$$$$
+      </button>
+      <button class="filter-btn" data-range="giftcards">
+        Gift Cards
+      </button>
+    </div>
+
+    <!-- GRID -->
+    <section class="wishlist-grid" id="wishlistGrid">
+
+      <!-- Texas Tech Sign -->
+      <article
+        class="item-card"
+        data-owner="chris"
+        data-price="75"
+      >
+        <div class="item-image-wrapper">
+          <div class="tier-chip">Decor</div>
+          <img
+            class="item-image"
+            src="https://m.media-amazon.com/images/I/61Evv21FoLL._AC_SL1500_.jpg"
+            alt="Ninja-style ice cream maker"
+          />
+          <div class="price-tag">$$$$</div>
+        </div>
+        <div class="item-body">
+          <h2 class="item-title">Texas Tech Sign</h2>
+          <p class="item-notes">
+            Saturday Neon Officially Licensed NCAA Texas Tech Red Raiders LED Neon Light Up Sign, 15" - Perfect for Fans and Alumni
+          </p>
+          <div class="tags">
+            <span class="tag">Decor</span>
+            <span class="tag">Inside</span>
+          </div>
+          <div class="item-footer">
+            <a
+              class="btn-link"
+              href="https://www.amazon.com/Saturday-Neon-Officially-Licensed-Raiders/dp/B0DPR8Y3C8?sr=8-8"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Product
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Texas Tech Chair -->
+      <article
+        class="item-card"
+        data-owner="chris"
+        data-price="80"
+      >
+        <div class="item-image-wrapper">
+          <div class="tier-chip">Outside</div>
+          <img
+            class="item-image"
+            src="https://m.media-amazon.com/images/I/7131IrIMRQL._AC_SL1500_.jpg"
+            alt="Ninja-style ice cream maker"
+          />
+          <div class="price-tag">$$$$</div>
+        </div>
+        <div class="item-body">
+          <h2 class="item-title">Texas Tech Chair</h2>
+          <p class="item-notes">
+            Logo Brands Officially Licensed NCAA Unisex Elite Chair, One Size, Team Color - Texas Tech Red Raiders
+          </p>
+          <div class="tags">
+            <span class="tag">Outside</span>
+            <span class="tag">Camping</span>
+          </div>
+          <div class="item-footer">
+            <a
+              class="btn-link"
+              href="https://www.amazon.com/Logo-Brands-Collegiate-Texas-Raiders/dp/B00W1XIJY8?sr=8-43"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Product
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Texas Tech Flag -->
+      <article
+        class="item-card"
+        data-owner="chris"
+        data-price="25"
+      >
+        <div class="item-image-wrapper">
+          <div class="tier-chip">Outside</div>
+          <img
+            class="item-image"
+            src="https://m.media-amazon.com/images/I/61+fWAsGqFL._AC_SL1500_.jpg"
+            alt="Ninja-style ice cream maker"
+          />
+          <div class="price-tag">$$</div>
+        </div>
+        <div class="item-body">
+          <h2 class="item-title">Texas Tech Flag</h2>
+          <p class="item-notes">
+            Desert Cactus Texas Tech University TTU Flag - 3 x 5 Feet Raiders Banner, Indoor/Outdoor Durable Fabric, 100% Polyester Design (Style J)
+          </p>
+          <div class="tags">
+            <span class="tag">Outside</span>
+            <span class="tag">Decor</span>
+          </div>
+          <div class="item-footer">
+            <a
+              class="btn-link"
+              href="https://www.amazon.com/Desert-Cactus-University-Raiders-Polyester/dp/B0BS4DRPVQ?sr=8-18"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Product
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Hammock -->
+      <article
+        class="item-card"
+        data-owner="chris"
+        data-price="50"
+      >
+        <div class="item-image-wrapper">
+          <div class="tier-chip">Outside</div>
+          <img
+            class="item-image"
+            src="https://m.media-amazon.com/images/I/819734REymL._AC_SL1500_.jpg"
+            alt="Ninja-style ice cream maker"
+          />
+          <div class="price-tag">$$$</div>
+        </div>
+        <div class="item-body">
+          <h2 class="item-title">Poratble Hammock</h2>
+          <p class="item-notes">
+            Miztli Camping Hammock -Portable Hammock w/Spacious Net & Tree Straps w/Adjustable Loops, Double and Single Hammock for Outdoor, Indoor, Hiking and Travel
+          </p>
+          <div class="tags">
+            <span class="tag">Outside</span>
+            <span class="tag">Camping</span>
+          </div>
+          <div class="item-footer">
+            <a
+              class="btn-link"
+              href="https://www.amazon.com/Camping-Hammock-Portable-Spacious-Adjutable/dp/B0CS2FWSBZ?cv_ct_cx=eno%2Bhammock&sbo=RZvfv%2F%2FHxDF%2BO5021pAnSA%3D%3D&sr=1-3-baa1f287-65d3-41a3-a655-8bbba0531537-spons&aref=oL39XiLrzR&sp_csd=d2lkZ2V0TmFtZT1zcF9zZWFyY2hfdGhlbWF0aWM"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Product
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Super Mario Party -->
+      <article
+        class="item-card"
+        data-owner="chris"
+        data-price="52"
+      >
+        <div class="item-image-wrapper">
+          <div class="tier-chip">Electronic</div>
+          <img
+            class="item-image"
+            src="https://m.media-amazon.com/images/I/81CpCNlyO1L._SY445_.jpg"
+            alt="Ninja-style ice cream maker"
+          />
+          <div class="price-tag">$$$</div>
+        </div>
+        <div class="item-body">
+          <h2 class="item-title">Super Mario Party Jamboree</h2>
+          <p class="item-notes">
+            Super Mario Party Jamboree for Nintendo Switch
+          </p>
+          <div class="tags">
+            <span class="tag">Video Game</span>
+            <span class="tag">Nintendo Switch</span>
+          </div>
+          <div class="item-footer">
+            <a
+              class="btn-link"
+              href="https://www.amazon.com/Super-Mario-Jamboree-Nintendo-Switch/dp/B0D8SHLWZR"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Product
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Ninja Creami -->
+      <article
+        class="item-card"
+        data-owner="chris"
+        data-price="180"
+      >
+        <div class="item-image-wrapper">
+          <div class="tier-chip">Kitchen</div>
+          <img
+            class="item-image"
+            src="https://assets.sharkninja.com/image/upload/f_auto/q_auto/SharkNinja-NA/NC301SD_01.jpg"
+            alt="Ninja-style ice cream maker"
+          />
+          <div class="price-tag">$$$$$</div>
+        </div>
+        <div class="item-body">
+          <h2 class="item-title">Ice Cream Maker / Ninja Creami-style</h2>
+          <p class="item-notes">
+            For protein ice cream, desserts, and experimenting with mix-ins - Color: Coffee Cream
+          </p>
+          <div class="tags">
+            <span class="tag">Kitchen</span>
+            <span class="tag">Dessert</span>
+          </div>
+          <div class="item-footer">
+            <a
+              class="btn-link"
+              href="https://www.sharkninja.com/ninja-creami-7-in-1-ice-cream-maker/NC301.html?dwvar_NC301_color=91908e"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Product
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Cast Iron Pan Set -->
+      <article
+        class="item-card"
+        data-owner="chris"
+        data-price="23"
+      >
+        <div class="item-image-wrapper">
+          <div class="tier-chip">Kitchen</div>
+          <img
+            class="item-image"
+            src="https://m.media-amazon.com/images/I/71wPgUyU7LL._AC_SL1295_.jpg"
+            alt="Cast iron pan set"
+          />
+          <div class="price-tag">$$</div>
+        </div>
+        <div class="item-body">
+          <h2 class="item-title">Cast Iron Pan Set</h2>
+          <p class="item-notes">
+            A small set for searing meat and making high-heat meals. Pre-seasoned or easy to season.
+          </p>
+          <div class="tags">
+            <span class="tag">Cooking</span>
+            <span class="tag">Long-lasting</span>
+          </div>
+          <div class="item-footer">
+            <a
+              class="btn-link"
+              href="https://www.amazon.com/Utopia-Kitchen-Pre-Seasoned-Skillet-3-Piece/dp/B06X8ZFGHP?sr=8-6&th=1"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Product
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Rechargeable AA Battery Pack -->
+      <article
+        class="item-card"
+        data-owner="chris"
+        data-price="12"
+      >
+        <div class="item-image-wrapper">
+          <div class="tier-chip">Electronics</div>
+          <img
+            class="item-image"
+            src="https://m.media-amazon.com/images/I/71QPvRQKv8L._AC_SY355_.jpg"
+            alt="Rechargeable AA batteries"
+          />
+          <div class="price-tag">$</div>
+        </div>
+        <div class="item-body">
+          <h2 class="item-title">Rechargeable AA Battery Pack</h2>
+          <p class="item-notes">
+            For controllers and gadgets. Any decent brand works (Amazon Basics is perfect).
+          </p>
+          <div class="tags">
+            <span class="tag">Practical</span>
+            <span class="tag">Tech</span>
+          </div>
+          <div class="item-footer">
+            <a
+              class="btn-link"
+              href="https://www.amazon.com/Amazon-Basics-Rechargeable-Batteries-Battery/dp/B0CLS26CYR?sr=8-6"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Product
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Garmin Watch -->
+      <article
+        class="item-card"
+        data-owner="chris"
+        data-price="250"
+      >
+        <div class="item-image-wrapper">
+          <div class="tier-chip">Electronics</div>
+          <img
+            class="item-image"
+            src="https://res.garmin.com/transform/image/upload/c_limit,dpr_1.0,f_auto,h_543,q_auto,w_1300/c_limit,h_543,w_1300/v1/Product_Images/en/products/010-02985-00/v/cf-xl?pgw=1&pgwact=1"
+            alt="Garmin-style fitness watch"
+          />
+          <div class="price-tag">$$$$$</div>
+        </div>
+        <div class="item-body">
+          <h2 class="item-title">Garmin-style Fitness Watch</h2>
+          <p class="item-notes">
+            Vivoactive 6: Slate with Black Band
+          </p>
+          <div class="tags">
+            <span class="tag">Fitness</span>
+            <span class="tag">Big gift</span>
+          </div>
+          <div class="item-footer">
+            <a
+              class="btn-link"
+              href="https://www.garmin.com/en-US/p/1555457/pn/010-02985-00/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Product
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Ninja Slushi -->
+      <article
+        class="item-card"
+        data-owner="chris"
+        data-price="270"
+      >
+        <div class="item-image-wrapper">
+          <div class="tier-chip">Kitchen</div>
+          <img
+            class="item-image"
+            src="https://m.media-amazon.com/images/I/81i7-o7KpOL._AC_SL1500_.jpg"
+            alt="Ninja SLUSHI"
+          />
+          <div class="price-tag">$$$$$</div>
+        </div>
+        <div class="item-body">
+          <h2 class="item-title">Ninja Slushi / Frozen Drink & Slushie Machine</h2>
+          <p class="item-notes">
+            Funky City - Dark - Wash - Stretch. 36/34 OR 38/34
+          </p>
+          <div class="tags">
+            <span class="tag">Kitchen</span>
+            <span class="tag">Drink</span>
+          </div>
+          <div class="item-footer">
+            <a
+              class="btn-link"
+              href="https://www.amazon.com/Ninja-FS301-Professional-RapidChill-Technology/dp/B0D2LZYQ2M"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Product
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Govee Lights -->
+      <article
+        class="item-card"
+        data-owner="chris"
+        data-price="20"
+      >
+        <div class="item-image-wrapper">
+          <div class="tier-chip">Electronics</div>
+          <img
+            class="item-image"
+            src="https://m.media-amazon.com/images/I/71U-8UJ6MoL._AC_SL1500_.jpg"
+            alt="Ninja SLUSHI"
+          />
+          <div class="price-tag">$</div>
+        </div>
+        <div class="item-body">
+          <h2 class="item-title">Govee RGBIC LED Strip Lights, 32.8ft Smart LED Lights for Bedroom</h2>
+          <p class="item-notes">
+            Bluetooth LED Lights APP Control, DIY Multiple Colors on One Line, Color Changing LED Strip Lighting Music Sync, Home Decor
+          </p>
+          <div class="tags">
+            <span class="tag">Electronic</span>
+            <span class="tag">Bedroom</span>
+          </div>
+          <div class="item-footer">
+            <a
+              class="btn-link"
+              href="https://www.amazon.com/Govee-Control-Segmented-Bluetooth-Changing/dp/B099S9DXT7?sr=8-7"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Product
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Reading Light -->
+      <article
+        class="item-card"
+        data-owner="chris"
+        data-price="10"
+      >
+        <div class="item-image-wrapper">
+          <div class="tier-chip">Electronics</div>
+          <img
+            class="item-image"
+            src="https://m.media-amazon.com/images/I/71iHqv6CfvL._AC_SL1500_.jpg"
+            alt="Ninja SLUSHI"
+          />
+          <div class="price-tag">$</div>
+        </div>
+        <div class="item-body">
+          <h2 class="item-title">Rechargeable Book Light</h2>
+          <p class="item-notes">
+            Gritin Reading Light, Rechargeable Book Light for Reading in Bed - Eye Caring 3 Color Temperatures, 5-Level Dimmable Brightness, Long Lasting, Compact Size Clip on Book Lamp
+          </p>
+          <div class="tags">
+            <span class="tag">Electronic</span>
+            <span class="tag">Bedroom</span>
+          </div>
+          <div class="item-footer">
+            <a
+              class="btn-link"
+              href="https://www.amazon.com/Gritin-Reading-Light-Book-Bed/dp/B0D7MD8BWW?sr=8-7"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Product
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Kitcken Magnet -->
+      <article
+        class="item-card"
+        data-owner="chris"
+        data-price="10"
+      >
+        <div class="item-image-wrapper">
+          <div class="tier-chip">Kitchen</div>
+          <img
+            class="item-image"
+            src="https://m.media-amazon.com/images/I/718YmqM+VrL._AC_SL1500_.jpg"
+            alt="Ninja SLUSHI"
+          />
+          <div class="price-tag">$</div>
+        </div>
+        <div class="item-body">
+          <h2 class="item-title">Dishwasher Magnet Clean Dirty Sign</h2>
+          <p class="item-notes">
+            Clean Dirty Magnet for Dishwasher, Rustic Farmhouse Kitchen Decor, Magnetic Dish Washer Sign Indicator, Sliding Rustic Dish Washer Signs, Black & White Wood
+          </p>
+          <div class="tags">
+            <span class="tag">Kitchen</span>
+            <span class="tag">Appliance</span>
+          </div>
+          <div class="item-footer">
+            <a
+              class="btn-link"
+              href="https://www.amazon.com/Dishwasher-Universal-Indicator-Organization-Farmhouse/dp/B09LXCY8R5?sr=8-39"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Product
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Bickmore -->
+      <article
+        class="item-card"
+        data-owner="chris"
+        data-price="27"
+      >
+        <div class="item-image-wrapper">
+          <div class="tier-chip">Cleaning</div>
+          <img
+            class="item-image"
+            src="https://m.media-amazon.com/images/I/91FmPodtyaL._AC_SY500_.jpg"
+            alt="Ninja SLUSHI"
+          />
+          <div class="price-tag">$$</div>
+        </div>
+        <div class="item-body">
+          <h2 class="item-title">Bickmore Boot Care Kit</h2>
+          <p class="item-notes">
+            Bick 1 Bick 4 & Gard-More - Leather Lotion Cleaner Conditioner & Protector - For Cleaning Softening and Protecting Boots Shoes Handbags Purses Jackets
+          </p>
+          <div class="tags">
+            <span class="tag">Cleaning</span>
+            <span class="tag">Appliance</span>
+          </div>
+          <div class="item-footer">
+            <a
+              class="btn-link"
+              href="https://www.amazon.com/Bickmore-Boot-Care-Kit-Conditioner/dp/B001CS6H8I/ref=sr_1_9?dib=eyJ2IjoiMSJ9.ftIzRzGwq47wVEc9vv9ZTgbiOJaTLj89sT8LK59J-yNRx7Q7vQ5O1p6neSkZ_5MTjk4uTzdnvA8INiPvBG7wfovyJ8XbsMLKIcWiOAi4ErpB97TWIXPoEzQh-gfz1VTsQg5ql5geKKbHJFtXlRevjlchylP5sfqSLD9wgj0IJbB0gqqrr4m9gy4nUCPGde9Q_y-6OkVcKcktw9xRgJRpP8Ur0rFX4U3qmFLW6iUNBS-G_4fIoUbkTo8ZvllCIHMOhrP2qC22diNmG7C9lokproXuJFWVTVGlsx2H1gAi0aU.E55ZebtwA6LiS-OCGDtv7kQ5wvGsU6mCYmIAWKMljIk&dib_tag=se&keywords=bick+1&qid=1763347784&sr=8-9"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Product
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Horsehair Brushes -->
+      <article
+        class="item-card"
+        data-owner="chris"
+        data-price="12"
+      >
+        <div class="item-image-wrapper">
+          <div class="tier-chip">Cleaning</div>
+          <img
+            class="item-image"
+            src="https://m.media-amazon.com/images/I/81cPukJaKlL._AC_SX522_.jpg"
+            alt="Ninja SLUSHI"
+          />
+          <div class="price-tag">$</div>
+        </div>
+        <div class="item-body">
+          <h2 class="item-title">6 Pcs Horsehair Brush Kit</h2>
+          <p class="item-notes">
+            6 Pcs Horsehair Shine Shoes Brush Kit Polish Dauber Applicators Cleaning Leather Shoes Boots Care Brushes Suede Cleaner Brush with Microfiber Shoe Gloves(6 Pcs Style E)
+          </p>
+          <div class="tags">
+            <span class="tag">Cleaning</span>
+            <span class="tag">Appliance</span>
+          </div>
+          <div class="item-footer">
+            <a
+              class="btn-link"
+              href="https://www.amazon.com/Horsehair-Applicators-Cleaning-Leather-Microfiber/dp/B0C2ND6LMQ/ref=sr_1_6?crid=F2ZXQTATAT3P&dib=eyJ2IjoiMSJ9.HYuMty9YgEIeBECukM14KzrrFmC10DFnsjXbzAsBnNA26rvyv1vePh4Lpd789F_JfLagzewAk-e-AE0bJbJuIYH6QQj0TTYYXFeaomda9TYPsS8HKqninfZSafCR4SlxzMQXCsPk7D_fW_LTEsK7UPb9kCZxV5TfXsMVUYfk3cdgNKccDO5xSoEvwzMcm0Dgmzf8KgdrCIQj5bCg-Jpb65WgDxsT0LHsH6Nm11KtG-9OQlb7ppzm2cquWUS3oQnlv1BbcQPVkYJdwjaIWSPGQx1WvL0Z-nt9IewJTr65X0I.ZjOFASy-r0GMwOjQVL0oF7ut22uGpeIGvUcQrZY_3s4&dib_tag=se&keywords=boot%2Bcleaning&qid=1763347983&sprefix=boot%2Bcleanin%2Caps%2C147&sr=8-6&th=1"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Product
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Mandoline -->
+      <article
+        class="item-card"
+        data-owner="chris"
+        data-price="20"
+      >
+        <div class="item-image-wrapper">
+          <div class="tier-chip">Kitchen</div>
+          <img
+            class="item-image"
+            src="https://m.media-amazon.com/images/I/81HfOkX7wOL._AC_SL1500_.jpg"
+            alt="Ninja SLUSHI"
+          />
+          <div class="price-tag">$</div>
+        </div>
+        <div class="item-body">
+          <h2 class="item-title">Mandoline Sliver for Kitchen</h2>
+          <p class="item-notes">
+            Stainless Steel Professional Vegetable Slicer with Adjustable Thickness, Ultra Sharp Blades, Safety Gloves & Food Holder, Ideal for Potatoes, Onions, Cucumbers
+          </p>
+          <div class="tags">
+            <span class="tag">Kitchen</span>
+            <span class="tag">Appliance</span>
+          </div>
+          <div class="item-footer">
+            <a
+              class="btn-link"
+              href="https://www.amazon.com/Mandoline-Vegetables-Adjustable-Vegetable-Potatoes/dp/B08MTCBGV6?sr=8-6"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Product
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- 5 pack Glass Storage Containers -->
+      <article
+        class="item-card"
+        data-owner="chris"
+        data-price="28"
+      >
+        <div class="item-image-wrapper">
+          <div class="tier-chip">Kitchen</div>
+          <img
+            class="item-image"
+            src="https://m.media-amazon.com/images/I/81yZcHBqjaL._AC_SL1500_.jpg"
+            alt="Ninja SLUSHI"
+          />
+          <div class="price-tag">$$</div>
+        </div>
+        <div class="item-body">
+          <h2 class="item-title">5Pack 22 oz Glass Storage Containers</h2>
+          <p class="item-notes">
+            Glass Meal Prep Food Container Sets with Snap Airtight Lids for Microwave, Oven, Freezer and Dishwasher
+          </p>
+          <div class="tags">
+            <span class="tag">Kitchen</span>
+            <span class="tag">Glassware</span>
+          </div>
+          <div class="item-footer">
+            <a
+              class="btn-link"
+              href="https://www.amazon.com/Vtopmart-Containers-Airtight-Microwave-Dishwasher/dp/B0D7P6XKNP?cv_ct_cx=meal%2Bprep%2Bcontainers&sbo=RZvfv%2F%2FHxDF%2BO5021pAnSA%3D%3D&sr=1-2-f7d8a1b7-d68f-4a86-bfcb-111c62272989-spons&aref=L1dimNFEoT&sp_csd=d2lkZ2V0TmFtZT1zcF9zZWFyY2hfdGhlbWF0aWM"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Product
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- 4-Tier Small Shoe Rack -->
+      <article
+        class="item-card"
+        data-owner="chris"
+        data-price="10"
+      >
+        <div class="item-image-wrapper">
+          <div class="tier-chip">Bedroom</div>
+          <img
+            class="item-image"
+            src="https://m.media-amazon.com/images/I/61WgErW2aWL._AC_SL1454_.jpg"
+            alt="Ninja SLUSHI"
+          />
+          <div class="price-tag">$</div>
+        </div>
+        <div class="item-body">
+          <h2 class="item-title">4-Tier Small Shoe Rack</h2>
+          <p class="item-notes">
+            Stackable Shoe Shelf Storage Organizer for Entryway Hallway Closet Bathroom Living Room (Black)
+          </p>
+          <div class="tags">
+            <span class="tag">Bedroom</span>
+            <span class="tag">Shoes</span>
+          </div>
+          <div class="item-footer">
+            <a
+              class="btn-link"
+              href="https://www.amazon.com/Hockmez-Stackable-Organizer-Entryway-Bathroom/dp/B09QML7J1V?sr=8-27"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Product
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Owala -->
+      <article
+        class="item-card"
+        data-owner="chris"
+        data-price="23"
+      >
+        <div class="item-image-wrapper">
+          <div class="tier-chip">Kitchen</div>
+          <img
+            class="item-image"
+            src="https://m.media-amazon.com/images/I/71mL0rwKWNL._AC_SL1500_.jpg"
+            alt="Ninja SLUSHI"
+          />
+          <div class="price-tag">$$</div>
+        </div>
+        <div class="item-body">
+          <h2 class="item-title">Owala, 24 Oz, Shy Marshmallow</h2>
+          <p class="item-notes">
+            Owala FreeSip Insulated Stainless Steel Water Bottle with Straw, BPA-Free Sports Water Bottle, Great for Travel, 24 Oz, Shy Marshmallow
+          </p>
+          <div class="tags">
+            <span class="tag">Kitchen</span>
+            <span class="tag">Water Bottle</span>
+          </div>
+          <div class="item-footer">
+            <a
+              class="btn-link"
+              href="https://www.amazon.com/Owala-Insulated-Stainless-Steel-Push-Button-Marshmallow/dp/B085DV8T75?sr=8-5"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Product
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Water Pick -->
+      <article
+        class="item-card"
+        data-owner="chris"
+        data-price="28"
+      >
+        <div class="item-image-wrapper">
+          <div class="tier-chip">Bathroom</div>
+          <img
+            class="item-image"
+            src="https://m.media-amazon.com/images/I/610pQgLnTZL._AC_SL1415_.jpg"
+            alt="Ninja SLUSHI"
+          />
+          <div class="price-tag">$$</div>
+        </div>
+        <div class="item-body">
+          <h2 class="item-title">Water Dental Flosser Teeth Pick</h2>
+          <p class="item-notes">
+            COSLUS Water Dental Flosser Teeth Pick: Portable Cordless Oral Irrigator 300ML Rechargeable Travel Irrigation Cleaner IPX7 Waterproof Electric Flossing Machine for Teeth Cleaning
+          </p>
+          <div class="tags">
+            <span class="tag">Bathroom</span>
+            <span class="tag">Appliance</span>
+          </div>
+          <div class="item-footer">
+            <a
+              class="btn-link"
+              href="https://www.amazon.com/Water-Dental-Flosser-Teeth-Pick/dp/B0BG52SJ5N?sr=8-44"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Product
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Glade Plug-in Refills -->
+      <article
+        class="item-card"
+        data-owner="chris"
+        data-price="13"
+      >
+        <div class="item-image-wrapper">
+          <div class="tier-chip">Bedroom</div>
+          <img
+            class="item-image"
+            src="https://m.media-amazon.com/images/I/81d-+6qeP-L._AC_SL1500_.jpg"
+            alt="Cast iron pan set"
+          />
+          <div class="price-tag">$</div>
+        </div>
+        <div class="item-body">
+          <h2 class="item-title">Glade PlugIns Refills</h2>
+          <p class="item-notes">
+            Air Freshener, Warm Apple & Spices, Scented and Essential Oils for Home and Bathroom, 0.67 Fl Oz, 5 Count
+          </p>
+          <div class="tags">
+            <span class="tag">Bedroom</span>
+            <span class="tag">Long-lasting</span>
+          </div>
+          <div class="item-footer">
+            <a
+              class="btn-link"
+              href="https://www.amazon.com/Glade-PlugIns-Freshener-Essential-Bathroom/dp/B0F6G2SNZS?sr=8-7"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Product
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- ======================= Gift Cards (Chris by default) ======================= -->
+
+      <!-- Amazon -->
+      <article
+        class="item-card"
+        data-owner="chris"
+        data-category="giftcard"
+      >
+        <div class="item-image-wrapper">
+          <div class="tier-chip">Gift Card</div>
+          <img
+            class="item-image"
+            src="https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6545/6545180_sd.jpg;maxHeight=1080;maxWidth=900?format=webp"
+            alt="Amazon gift card"
+          />
+        </div>
+        <div class="item-body">
+          <h2 class="item-title">Amazon Gift Card</h2>
+          <p class="item-notes">
+            Any amount is appreciated.
+          </p>
+          <div class="tags">
+            <span class="tag">Gift card</span>
+            <span class="tag">Flexible</span>
+          </div>
+          <div class="item-footer"></div>
+        </div>
+      </article>
+
+      <!-- Steam -->
+      <article
+        class="item-card"
+        data-owner="chris"
+        data-category="giftcard"
+      >
+        <div class="item-image-wrapper">
+          <div class="tier-chip">Gift Card</div>
+          <img
+            class="item-image"
+            src="https://recharge-prd.asset.akeneo.cloud/product_assets/media/product_card_steam_gb_gbp.png"
+            alt="Steam gift card"
+          />
+        </div>
+        <div class="item-body">
+          <h2 class="item-title">Steam Gift Card</h2>
+          <p class="item-notes">
+            Any amount is appreciated.
+          </p>
+          <div class="tags">
+            <span class="tag">Gift card</span>
+            <span class="tag">Flexible</span>
+          </div>
+          <div class="item-footer"></div>
+        </div>
+      </article>
+
+      <!-- Target -->
+      <article
+        class="item-card"
+        data-owner="chris"
+        data-category="giftcard"
+      >
+        <div class="item-image-wrapper">
+          <div class="tier-chip">Gift Card</div>
+          <img
+            class="item-image"
+            src="https://uvahs.myshopify.com/cdn/shop/products/UVAHSPRO085_large.jpg?v=1504645090"
+            alt="Target gift card"
+          />
+        </div>
+        <div class="item-body">
+          <h2 class="item-title">Target Gift Card</h2>
+          <p class="item-notes">
+            Any amount is appreciated.
+          </p>
+          <div class="tags">
+            <span class="tag">Gift card</span>
+            <span class="tag">Flexible</span>
+          </div>
+          <div class="item-footer"></div>
+        </div>
+      </article>
+
+      <!-- Wingstop -->
+      <article
+        class="item-card"
+        data-owner="chris"
+        data-category="giftcard"
+      >
+        <div class="item-image-wrapper">
+          <div class="tier-chip">Gift Card</div>
+          <img
+            class="item-image"
+            src="https://www.cardbear.com/img/large/Wingstop-gift-card.png"
+            alt="Wingstop gift card"
+          />
+        </div>
+        <div class="item-body">
+          <h2 class="item-title">Wingstop Gift Card</h2>
+          <p class="item-notes">
+            Any amount is appreciated.
+          </p>
+          <div class="tags">
+            <span class="tag">Gift card</span>
+            <span class="tag">Flexible</span>
+          </div>
+          <div class="item-footer"></div>
+        </div>
+      </article>
+
+      <!-- Chick-Fil-A -->
+      <article
+        class="item-card"
+        data-owner="chris"
+        data-category="giftcard"
+      >
+        <div class="item-image-wrapper">
+          <div class="tier-chip">Gift Card</div>
+          <img
+            class="item-image"
+            src="https://i.ebayimg.com/images/g/7XoAAOSwHyxm05BI/s-l1200.jpg"
+            alt="Chick-Fil-A gift card"
+          />
+        </div>
+        <div class="item-body">
+          <h2 class="item-title">Chick-Fil-A Gift Card</h2>
+          <p class="item-notes">
+            Any amount is appreciated.
+          </p>
+          <div class="tags">
+            <span class="tag">Gift card</span>
+            <span class="tag">Flexible</span>
+          </div>
+          <div class="item-footer"></div>
+        </div>
+      </article>
+
+      <!-- Little Caesars -->
+      <article
+        class="item-card"
+        data-owner="chris"
+        data-category="giftcard"
+      >
+        <div class="item-image-wrapper">
+          <div class="tier-chip">Gift Card</div>
+          <img
+            class="item-image"
+            src="https://i5.walmartimages.com/asr/fed43e8e-27aa-4033-a7bf-e8c062882f50.2d66758f1c54b1fbb8eeca58e211c604.jpeg?odnHeight=768&odnWidth=768&odnBg=FFFFFF"
+            alt="Little Caesars gift card"
+          />
+        </div>
+        <div class="item-body">
+          <h2 class="item-title">Little Caesars Gift Card</h2>
+          <p class="item-notes">
+            Any amount is appreciated.
+          </p>
+          <div class="tags">
+            <span class="tag">Gift card</span>
+            <span class="tag">Flexible</span>
+          </div>
+          <div class="item-footer"></div>
+        </div>
+      </article>
+
+      <!-- Dominos -->
+      <article
+        class="item-card"
+        data-owner="chris"
+        data-category="giftcard"
+      >
+        <div class="item-image-wrapper">
+          <div class="tier-chip">Gift Card</div>
+          <img
+            class="item-image"
+            src="https://m.media-amazon.com/images/I/41PZMShltQL.jpg"
+            alt="Dominos gift card"
+          />
+        </div>
+        <div class="item-body">
+          <h2 class="item-title">Dominos Gift Card</h2>
+          <p class="item-notes">
+            Any amount is appreciated.
+          </p>
+          <div class="tags">
+            <span class="tag">Gift card</span>
+            <span class="tag">Flexible</span>
+          </div>
+          <div class="item-footer"></div>
+        </div>
+      </article>
+
+      <!-- Pizza Hut -->
+      <article
+        class="item-card"
+        data-owner="chris"
+        data-category="giftcard"
+      >
+        <div class="item-image-wrapper">
+          <div class="tier-chip">Gift Card</div>
+          <img
+            class="item-image"
+            src="https://images.media.gianteagle.com/00400505991993-5428642d-8308-440a-821e-ddcf8fab6a85.png?auto=format%2Ccompress&fill=solid&fit=fill&h=600&q=92&w=600"
+            alt="Pizza Hut gift card"
+          />
+        </div>
+        <div class="item-body">
+          <h2 class="item-title">Pizza Hut Gift Card</h2>
+          <p class="item-notes">
+            Any amount is appreciated.
+          </p>
+          <div class="tags">
+            <span class="tag">Gift card</span>
+            <span class="tag">Flexible</span>
+          </div>
+          <div class="item-footer"></div>
+        </div>
+      </article>
+
+      <!-- =================== Add her items here with data-owner="gf" =================== -->
+      <!-- Example (delete once you add real ones):
+      <article
+        class="item-card"
+        data-owner="gf"
+        data-price="35"
+      >
+        <div class="item-image-wrapper">
+          <div class="tier-chip">Self-care</div>
+          <img
+            class="item-image"
+            src="https://via.placeholder.com/400x300.png?text=Her+Gift"
+            alt="Example gift for her"
+          />
+          <div class="price-tag">$$</div>
+        </div>
+        <div class="item-body">
+          <h2 class="item-title">Example Gift for Her</h2>
+          <p class="item-notes">
+            Just a sample card to test her list.
+          </p>
+          <div class="tags">
+            <span class="tag">For her</span>
+            <span class="tag">Sample</span>
+          </div>
+          <div class="item-footer">
+            <a class="btn-link" href="#" target="_blank" rel="noopener noreferrer">
+              View Product
+            </a>
+          </div>
+        </div>
+      </article>
+      -->
+
+    </section>
+
+    <div class="empty-state" id="emptyState">
+      Nothing in that price range yet — try a different filter.
+    </div>
+
+    <footer>
+      If you’re not sure what to pick, feel free to ask me directly — I’m easy.
+    </footer>
+  </div>
+
+<script>
+  // owner buttons (Chris vs Her)
+  const ownerButtons = document.querySelectorAll(".owner-btn");
+  // price / category filter buttons
+  const filterButtons = document.querySelectorAll(".filter-btn:not(.owner-btn)");
+  const cards = document.querySelectorAll(".item-card");
+  const emptyState = document.getElementById("emptyState");
+
+  let currentOwner = "chris";   // default
+  let currentRange = "all";     // default
+
+  function applyFilter() {
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+      const owner = card.dataset.owner || "chris";
+      const isGiftCard = card.dataset.category === "giftcard";
+      const rawPrice = card.dataset.price;
+      const price = rawPrice ? parseFloat(rawPrice) : null;
+      let show = false;
+
+      // First: owner match
+      if (owner !== currentOwner) {
+        card.style.display = "none";
+        return;
+      }
+
+      // Then: price / category match
+      switch (currentRange) {
+        case "all":
+          show = true;
+          break;
+
+        case "giftcards":
+          show = isGiftCard;
+          break;
+
+        case "under20":
+          show = !isGiftCard && price !== null && price < 20;
+          break;
+
+        case "20-40":
+          show = !isGiftCard && price !== null && price >= 20 && price <= 40;
+          break;
+
+        case "40-60":
+          show = !isGiftCard && price !== null && price > 40 && price <= 60;
+          break;
+
+        case "60-100":
+          show = !isGiftCard && price !== null && price > 60 && price <= 100;
+          break;
+
+        case "100plus":
+          show = !isGiftCard && price !== null && price > 100;
+          break;
+      }
+
+      if (show) {
+        card.style.display = "flex";
+        visibleCount++;
+      } else {
+        card.style.display = "none";
+      }
+    });
+
+    emptyState.style.display = visibleCount === 0 ? "block" : "none";
+  }
+
+  // Price / category buttons
+  filterButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      filterButtons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentRange = btn.dataset.range;
+      applyFilter();
+    });
+  });
+
+  // Owner buttons
+  ownerButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      ownerButtons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentOwner = btn.dataset.owner;
+      applyFilter();
+    });
+  });
+
+  // Initial render
+  applyFilter();
+</script>
+
+</body>
+</html>
