@@ -1812,6 +1812,8 @@
   const cards = document.querySelectorAll(".item-card");
   const emptyState = document.getElementById("emptyState");
 
+  const allFilterButton = document.querySelection('.filter-btn[data-range="all"]');
+  
   let currentOwner = "chris";   // default
   let currentRange = "all";     // default
 
@@ -1886,6 +1888,12 @@
       ownerButtons.forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
       currentOwner = btn.dataset.owner;
+
+      currentRange = "all";
+      filterButtons.forEach(b => b.classlist.remove("active"));
+      if (allFilterButton) {
+        allFilterButton.classList.add("active"));
+      }
       applyFilter();
     });
   });
