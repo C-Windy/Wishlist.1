@@ -1812,8 +1812,9 @@
   const cards = document.querySelectorAll(".item-card");
   const emptyState = document.getElementById("emptyState");
 
-  const allFilterButton = document.querySelection('.filter-btn[data-range="all"]');
-  
+  // ⬅️ querySelector (no "Selection")
+  const allFilterButton = document.querySelector('.filter-btn[data-range="all"]');
+
   let currentOwner = "chris";   // default
   let currentRange = "all";     // default
 
@@ -1838,27 +1839,21 @@
         case "all":
           show = true;
           break;
-
         case "giftcards":
           show = isGiftCard;
           break;
-
         case "under20":
           show = !isGiftCard && price !== null && price < 20;
           break;
-
         case "20-40":
           show = !isGiftCard && price !== null && price >= 20 && price <= 40;
           break;
-
         case "40-60":
           show = !isGiftCard && price !== null && price > 40 && price <= 60;
           break;
-
         case "60plus":
           show = !isGiftCard && price !== null && price >= 60;
           break;
-
       }
 
       if (show) {
@@ -1885,15 +1880,18 @@
   // Owner buttons
   ownerButtons.forEach(btn => {
     btn.addEventListener("click", () => {
+      // set active owner
       ownerButtons.forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
       currentOwner = btn.dataset.owner;
 
+      // 🔄 reset price filter to "All"
       currentRange = "all";
-      filterButtons.forEach(b => b.classlist.remove("active"));
+      filterButtons.forEach(b => b.classList.remove("active")); // classList, capital L
       if (allFilterButton) {
-        allFilterButton.classList.add("active"));
+        allFilterButton.classList.add("active"); // removed extra ")"
       }
+
       applyFilter();
     });
   });
@@ -1901,6 +1899,7 @@
   // Initial render
   applyFilter();
 </script>
+
 
 </body>
 </html>
